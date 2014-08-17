@@ -63,9 +63,11 @@ ${LIBDIR}/${LIB}:
 
 .PHONY: boot
 boot: usbjtag.hex
-	-test -e /dev/usb_jtag    && /sbin/fxload -D /dev/usb_jtag    -I usbjtag.hex -t fx2
-	-test -e /dev/tracii_xl2  && /sbin/fxload -D /dev/tracii_xl2  -I usbjtag.hex -t fx2
-	-test -e /dev/xilinx_xpcu && /sbin/fxload -D /dev/xilinx_xpcu -I usbjtag.hex -t fx2
+#	-test -e /dev/usb_jtag    && /sbin/fxload -D /dev/usb_jtag    -I usbjtag.hex -t fx2
+#	-test -e /dev/tracii_xl2  && /sbin/fxload -D /dev/tracii_xl2  -I usbjtag.hex -t fx2
+#	-test -e /dev/xilinx_xpcu && /sbin/fxload -D /dev/xilinx_xpcu -I usbjtag.hex -t fx2
+	/sbin/fxload -t fx2lp -I usbjtag.hex -v -D `lsusb -d 04b4:8613 | cut -d: -f1 | awk '{ print "/dev/bus/usb/" $$2 "/" $$4 }'`
+	
 
 REF=/home/kawk/work/xilinx/xtern/xusbdfwu/xusbdfwu-1025.hex
 
