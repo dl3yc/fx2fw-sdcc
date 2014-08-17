@@ -18,6 +18,10 @@
  *-----------------------------------------------------------------------------
  */
 
+#define _naked	__naked
+#define _asm	__asm
+#define _endasm	__endasm
+
 /*
  * Delay approximately 1 microsecond (including overhead in udelay).
  */

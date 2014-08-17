@@ -19,7 +19,7 @@
 #ifndef _EEPROM_H
 #define _EEPROM_H 1
 
-extern xdata unsigned char eeprom[128];
+extern __xdata unsigned char eeprom[128];
 extern void eeprom_init(void);
 
 #endif /* _EEPROM_H */

@@ -67,6 +67,17 @@
 #define _AT_ ;/ ## /
 #endif
 
+/* XXX dpavlin -- fix building on sdcc 3.4.0 */
+#define at	__at
+#define xdata	__xdata
+#define sfr	__sfr
+#define sbit	__sbit
+#define bit	__bit
+#define _asm	__asm
+#define _endasm	__endasm
+#define interrupt __interrupt
+
+
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 

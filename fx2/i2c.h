@@ -21,6 +21,8 @@
 #ifndef _I2C_H_
 #define _I2C_H_
 
+#define xdata __xdata
+
 // returns non-zero if successful, else 0
 unsigned char i2c_read (unsigned char addr, xdata unsigned char *buf, unsigned char len);
 

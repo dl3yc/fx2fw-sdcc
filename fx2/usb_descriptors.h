@@ -18,6 +18,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#define xdata __xdata
+
 extern xdata const char high_speed_device_descr[];
 extern xdata const char high_speed_devqual_descr[];
 extern xdata const char high_speed_config_descr[];

@@ -21,6 +21,8 @@
 #ifndef _USB_COMMON_H_
 #define _USB_COMMON_H_
 
+#define bit __bit
+
 #define	bRequestType	SETUPDAT[0]
 #define	bRequest	SETUPDAT[1]
 #define	wValueL		SETUPDAT[2]
