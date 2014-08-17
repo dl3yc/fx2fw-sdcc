@@ -37,7 +37,7 @@ As is, the code assumes the following pin assignment:
  Port C.3: TMS
 
 Other assignments are possible; you'll have to adapt the definitions in hardware.h and maybe
-in hardware.c, too.
+in hw_*.c, too.
 
 The USB identification data (vendor/product ID, strings, ...) can be modified in dscr.a51. My
 firmware emulates the 128 byte EEPROM that usually holds configuration data for the FT245 and
