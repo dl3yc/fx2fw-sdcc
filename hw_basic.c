@@ -21,22 +21,26 @@
 #include "delay.h"
 
 //-----------------------------------------------------------------------------
+// comment out (undefine!) if you don't want PS, AS or OE signals
 
 #define HAVE_PS_MODE 1
 #define HAVE_AS_MODE 1
 #define HAVE_OE_LED  1
 
+// comment in (define!) if you want outputs disabled when possible
+//#define HAVE_OENABLE 1
+
 //-----------------------------------------------------------------------------
 
 /* JTAG TCK, AS/PS DCLK */
 
-sbit at 0xA2          TCK; /* Port C.0 */
+sbit at 0xA2          TCK; /* Port C.2 */
 #define bmTCKOE       bmBIT2
 #define SetTCK(x)     do{TCK=(x);}while(0)
 
 /* JTAG TDI, AS ASDI, PS DATA0 */
 
-sbit at 0xA0          TDI; /* Port C.2 */
+sbit at 0xA0          TDI; /* Port C.0 */
 #define bmTDIOE       bmBIT0
 #define SetTDI(x)     do{TDI=(x);}while(0)
 
@@ -53,7 +57,7 @@ sbit at 0xA1          TDO; /* Port C.1 */
 #define GetTDO(x)     TDO
 
 /* JTAG ENABLE */
-sbit JTAG_EN = 0xA0+7;
+sbit JTAG_EN = 0xA7; /* Port C.7 */
 #define bmJTAG_EN bmBIT7
 
 //-----------------------------------------------------------------------------
@@ -69,7 +73,7 @@ sbit JTAG_EN = 0xA0+7;
 #else
 
   #define bmASDOOE    0
-  #define GetASDO(x)  0
+  #define GetASDO(x)  1
 
 #endif
 
@@ -138,6 +142,15 @@ void ProgIO_Init(void)
   /* The following code depends on your actual circuit design.
      Make required changes _before_ you try the code! */
   
+  // set the CPU clock to 48MHz, enable clock output to FPGA
+  CPUCS = bmCLKOE | bmCLKSPD1;
+
+   // put the system in FIFO mode by default
+   // internal clock source at 48Mhz, drive output pin, synchronous mode
+   // NOTE: Altera USB-Blaster does not work in another mode
+   IFCONFIG =  bmIFCLKSRC | bm3048MHZ | bmIFCLKOE;
+   IFCONFIG |= bmASYNC | bmIFCFG1 | bmIFCFG0;
+
    // set port C output enable (so we can handle the JTAG enable signal)
    OEC = (1 << 7);
 
@@ -148,17 +161,8 @@ void ProgIO_Init(void)
    // more than 100ma)
    IOE = (1 << 6);
 
-   // set the CPU clock to 48MHz
-   CPUCS = bmCLKSPD1;
-
    // activate JTAG outputs on Port C
    OEC = bmTDIOE | bmTCKOE | bmTMSOE | bmJTAG_EN;
-
-   // put the system in FIFO mode by default
-   // internal clock source at 48Mhz, drive output pin, synchronous mode
-   // NOTE: Altera USB-Blaster does not work in another mode
-   IFCONFIG =  bmIFCLKSRC | bm3048MHZ | bmIFCLKOE;
-   IFCONFIG |= bmASYNC | bmIFCFG1 | bmIFCFG0;
 }
 
 void ProgIO_Set_State(unsigned char d)
@@ -170,7 +174,7 @@ void ProgIO_Set_State(unsigned char d)
    * d.2 => nCE (only #ifdef HAVE_AS_MODE)
    * d.3 => nCS (only #ifdef HAVE_AS_MODE)
    * d.4 => TDI
-   * d.6 => LED / Output Enable
+   * d.5 => LED / Output Enable
    */
 
   SetTCK((d & bmBIT0) ? 1 : 0);
@@ -187,14 +191,14 @@ void ProgIO_Set_State(unsigned char d)
 
 unsigned char ProgIO_Set_Get_State(unsigned char d)
 {
-  ProgIO_Set_State(d);
-
-  /* Read state of input pins:
+  /* Set state of output pins (s.a.)
+   * then read state of input pins:
    *
    * TDO => d.0
    * DATAOUT => d.1 (only #ifdef HAVE_AS_MODE)
    */
 
+  ProgIO_Set_State(d);
    return (GetASDO()<<1)|GetTDO();
 }
 
